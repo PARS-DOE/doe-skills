@@ -9,6 +9,7 @@ The repo follows the [skills.sh](https://skills.sh) layout — each top-level di
 | Skill | Purpose |
 | --- | --- |
 | [doe-branding](doe-branding/) | 2025 DOE brand standards — logos, colors, typography, and templates for on-brand deliverables. |
+| [empower](empower/) | Empower (EVMS reporting and analysis) user manual and tech notes — concepts, configuration, custom reports, and administration. |
 | [pars-json-tools](pars-json-tools/) | Validate and convert PARS CPP JSON; includes schema reference. |
 
 ## Layout

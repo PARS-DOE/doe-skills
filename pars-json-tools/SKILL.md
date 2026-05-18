@@ -1,6 +1,6 @@
 ---
 name: pars-json-tools
-description: "Tools and utilities for working with PARS CPP JSON files - validation, conversion to Excel, and schema reference. Use when asked to validate, convert, or analyze PARS JSON data, or when the user needs information about PARS CPP data format or schema."
+description: Tools and utilities for working with PARS CPP JSON files - validation, conversion to Excel, and schema reference. Use when asked to validate, convert, or analyze PARS JSON data, or when the user needs information about PARS CPP data format or schema.
 ---
 
 # PARS JSON Tools
@@ -76,13 +76,14 @@ bun run skills/pars-json-tools/json-to-excel.ts <input-file.zip>
 bun run skills/pars-json-tools/json-to-excel.ts project-data.json
 
 # This creates project-data.xlsx with sheets for each dataset
+# Common datasets: Projects, ActivitiesWBS, Resources, etc.
 ```
 
 ## Schema Information
 
 ### Compact Reference
 
-**File**: `skills/pars-json-tools/pars-cpp-compact-reference.md`
+**File**: `pars-cpp-compact-reference.md`
 
 **Purpose**: AI-friendly, human-readable description of the PARS CPP JSON schema structure. This is MUCH easier to read than the full JSON schema.
 
@@ -93,6 +94,7 @@ bun run skills/pars-json-tools/json-to-excel.ts project-data.json
 
 **How to use**:
 ```bash
+# Read the compact reference
 cat skills/pars-json-tools/pars-cpp-compact-reference.md
 ```
 
@@ -100,7 +102,7 @@ cat skills/pars-json-tools/pars-cpp-compact-reference.md
 
 ### Full JSON Schema
 
-**File**: `skills/pars-json-tools/pars-cpp-json-schema-v5-0-3.json`
+**File**: `pars-cpp-json-schema-v5-0-3.json`
 
 **Purpose**: Machine-readable JSON Schema for PARS CPP v5.0.3 (official schema from json.pars.doe.gov).
 
@@ -160,6 +162,7 @@ jq '.Projects[0] | keys' project-data.json
 2. **Use compact reference**: Read `pars-cpp-compact-reference.md` to understand structure
 3. **Use jq for queries**: jq is perfect for quick JSON analysis and filtering
 4. **Excel for exploration**: Convert to Excel when users want to browse data visually
+5. **Check datasets**: Common datasets include Projects, ActivitiesWBS, Resources, Milestones
 
 ## File Locations
 
@@ -169,13 +172,13 @@ All PARS tools are in `skills/pars-json-tools/`:
 - `pars-cpp-compact-reference.md` - AI-friendly schema documentation
 - `pars-cpp-json-schema-v5-0-3.json` - Full JSON schema (use sparingly)
 
-## Dependencies
+## Visual Verification Loop (RECOMMENDED)
 
-These scripts require:
-- **Bun** runtime
-- **ajv** and **ajv-formats** packages (for validation)
-- **xlsx** package (for Excel conversion)
-- **adm-zip** package (for ZIP file handling)
+For Excel conversions from PARS JSON, verify output quality:
+
+1. **Convert to PDF/PNG**: `soffice --headless --convert-to pdf output.xlsx && pdftoppm -jpeg -r 150 output.pdf sheet`
+2. **Inspect images** for: clipped data, readable headers, consistent formatting
+3. **Fix and regenerate** if issues found
 
 ## Quality Checklists
 
@@ -190,6 +193,15 @@ These scripts require:
 - [ ] Column widths accommodate content
 - [ ] Headers are bold and distinct from data
 
+## Citation Standards
+
+When presenting PARS-derived data:
+```
+Source: PARS [Database/Export]
+Date Extracted: [Date]
+Records: [Count]
+```
+
 ## Common Issues & Solutions
 
 | Issue | Solution |
@@ -198,3 +210,11 @@ These scripts require:
 | Date format error | Convert to ISO 8601: YYYY-MM-DDTHH:MM:SSZ |
 | Column clipping in Excel | Autofit or manually widen after conversion |
 | Enum value unrecognized | Verify against compact reference |
+
+## Dependencies
+
+These scripts require:
+- **Bun** runtime
+- **ajv** and **ajv-formats** packages (for validation)
+- **xlsx** package (for Excel conversion)
+- **adm-zip** package (for ZIP file handling)
