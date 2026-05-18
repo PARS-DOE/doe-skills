@@ -25,3 +25,11 @@ Each skill is self-contained:
 ```
 
 `SKILL.md` begins with YAML frontmatter containing `name` and `description` — the description is what tooling uses to decide when to load the skill, so it should be specific about triggers.
+
+## Licensing
+
+This repository mixes three licensing regimes. See [LICENSE](LICENSE) for the full text.
+
+- **Scripts, utilities, and skill instructions** authored for this repo (everything under `pars-json-tools/` and the `SKILL.md` / `README.md` files) are released under the **MIT License**.
+- **DOE branding assets** in [`doe-branding/`](doe-branding/) (logos, templates, brand guide, sample fact sheet) are **proprietary to the U.S. Department of Energy**. Use is restricted by the DOE brand guidelines included in `doe-branding/doe-brand-guide.md`.
+- **Empower reference content** in [`empower/`](empower/) is **proprietary to Encore Analytics, LLC**. It is a reformatted, agent-friendly version of Encore Analytics' public-facing support documentation and is included here with permission from Encore Analytics.
