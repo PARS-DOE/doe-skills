@@ -14,23 +14,30 @@ This repo follows the agentskills.io specification: each top-level directory is 
 
 ## Installing
 
-The easiest way to install these skills is with the [`skills` CLI](https://skills.sh), which handles most popular agent harnesses (Claude Code, Cursor, OpenAI Codex, Gemini CLI, OpenCode, GitHub Copilot, and more):
+The easiest way to install these skills is to **ask your agent to install them**. The [`skills` CLI](https://skills.sh) detects which harness is running it (Claude Code, Cursor, OpenAI Codex, Gemini CLI, OpenCode, GitHub Copilot, etc.) and drops the files where that harness watches for skills. If you run the CLI yourself in a plain terminal it has to guess where to put things, so letting the agent run it removes that guesswork.
+
+In your agent's chat, ask it to run a command like:
 
 ```bash
-# List the skills available in this repo
-npx skills add PARS-DOE/doe-skills --list
-
-# Install a single skill into your current project (default)
-npx skills add PARS-DOE/doe-skills --skill pars-json-tools
-
-# Install globally (available across all projects) and target a specific harness
-npx skills add PARS-DOE/doe-skills --skill pars-json-tools -g -a claude-code
-
-# Install everything globally for all detected harnesses
-npx skills add PARS-DOE/doe-skills --all -g --agent '*'
+npx skills add PARS-DOE/doe-skills --skill pars-json-tools -g -y
 ```
 
-By default the installer drops skills into `./<harness>/skills/` in your current project. Pass `-g` for the personal-scope location (e.g. `~/.claude/skills/`). Pass `-a <harness>` (repeatable) or `--agent '*'` to target specific harnesses; otherwise the CLI prompts you.
+Flag breakdown:
+- `--skill <name>` — install just the named skill. Repeat the flag for multiple skills, or use `--all` for everything.
+- `-g` — install globally (available across all projects). Drop it to install only into the current project's `.agents/`-style directory.
+- `-y` — non-interactive; the CLI won't pause to prompt. Important when an agent is running it for you, since agents can't answer interactive prompts.
+
+Other useful invocations:
+
+```bash
+# Show the available skills in this repo before picking one
+npx skills add PARS-DOE/doe-skills --list
+
+# Install everything, globally, into every supported harness on this machine
+npx skills add PARS-DOE/doe-skills --all -g --agent '*' -y
+```
+
+After install, restart the agent (or run its skill-reload command) so it picks up the new files.
 
 ### Doing it by hand
 
