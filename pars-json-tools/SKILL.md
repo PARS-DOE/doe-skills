@@ -1,6 +1,6 @@
 ---
 name: pars-json-tools
-description: Tools and utilities for working with PARS CPP JSON files - validation, conversion to Excel, and schema reference. Use when asked to validate, convert, or analyze PARS JSON data, or when the user needs information about PARS CPP data format or schema.
+description: Tools and utilities for working with PARS CPP JSON files - validation, conversion to Excel, schema reference, and DIQ definition lookup. Use when asked to validate, convert, or analyze PARS JSON data, when the user needs information about PARS CPP data format or schema, or when looking up a specific DIQ (Data Integrity and Quality) check.
 ---
 
 # PARS JSON Tools
@@ -15,6 +15,7 @@ PARS (Project Assessment and Reporting System) uses a structured JSON format for
 - User wants to convert PARS JSON to Excel
 - User needs information about PARS JSON structure
 - User asks about PARS CPP data format or schema
+- User asks about a specific DIQ check or data integrity rule
 
 ## Available Tools
 
@@ -78,6 +79,46 @@ bun run skills/pars-json-tools/json-to-excel.ts project-data.json
 # This creates project-data.xlsx with sheets for each dataset
 # Common datasets: Projects, ActivitiesWBS, Resources, etc.
 ```
+
+### 3. DIQ Definition Lookup
+
+**Tool**: `get-diq-definition.py`
+
+**Purpose**: Retrieve a PARS Data Integrity and Quality (DIQ) check definition from the public [PARS Wiki](https://wiki.pars.doe.gov/en/DIQs). Returns clean markdown with the check's basic information, error causes, rationale, and SQL logic. DIQs are quality rules applied to PARS CPP JSON uploads after schema validation; each DIQ has a 7-digit ID and belongs to a dataset (DS00-DS21).
+
+**Usage**:
+```bash
+# Number-only form: dataset inferred from digits 2-3 (9070365 -> DS07)
+python3 skills/pars-json-tools/get-diq-definition.py 9070365
+
+# Explicit DS{NN}/{number} form
+python3 skills/pars-json-tools/get-diq-definition.py DS07/9070365
+
+# Or fetch any wiki.pars.doe.gov page directly
+python3 skills/pars-json-tools/get-diq-definition.py --url https://wiki.pars.doe.gov/en/DIQs
+```
+
+**Output**:
+- Markdown to stdout with the page title, source URL, basic information table, what causes the error, why we check this, and (where present) the SQL function used to evaluate the check.
+- Exit code 0 on success, 1 if the page is missing or unreachable, 2 if the DIQ ID is malformed.
+
+**DIQ ID format**:
+- The first digit is `1` for single-dataset DIQs or `9` for DIQs that touch multiple datasets.
+- Digits 2-3 are the dataset number: `01`=DS01 (WBS), `02`=DS02, `03`=DS03 (EVT), `04`=DS04 (Schedule), `05`=DS05 (Schedule Logic), `06`=DS06 (Resources), `07`=DS07 (IPMR), `08`=DS08 (WAD), `09`=DS09 (CC Log), `10`=DS10 (CC Log Detail), `11`-`15`=DS11-DS15, `16`=DS16, `17`=DS17 (WBS EU), `18`=DS18 (Schedule EU), `19`=DS19 (Schedule Logic EU), `20`=DS20 (Sched CAL EU), `21`=DS21 (Rates EU). `00`=DS00 (metadata-level checks).
+
+**Example**:
+```bash
+# Look up "12 Months Since OTB-OTS Without BCP" (DS07/9070365)
+python3 skills/pars-json-tools/get-diq-definition.py 9070365
+
+# Browse the full index of DIQs (groups all checks by dataset)
+python3 skills/pars-json-tools/get-diq-definition.py --url https://wiki.pars.doe.gov/en/DIQs
+```
+
+**Notes**:
+- Uses the Python standard library only; no extra packages required.
+- DIQs are the second phase of PARS data validation, applied after JSON schema validation. Each DIQ documents the check's severity (CRITICAL / MAJOR / MINOR), the table it runs against, the failure condition, and the SQL function that implements it.
+- The wiki is public, so this tool needs no credentials.
 
 ## Schema Information
 
@@ -169,6 +210,7 @@ jq '.Projects[0] | keys' project-data.json
 All PARS tools are in `skills/pars-json-tools/`:
 - `validate-pars-json.ts` - Validation script
 - `json-to-excel.ts` - Excel conversion script
+- `get-diq-definition.py` - DIQ definition lookup against the PARS Wiki
 - `pars-cpp-compact-reference.md` - AI-friendly schema documentation
 - `pars-cpp-json-schema-v5-0-3.json` - Full JSON schema (use sparingly)
 
@@ -214,7 +256,8 @@ Records: [Count]
 ## Dependencies
 
 These scripts require:
-- **Bun** runtime
+- **Bun** runtime (for `validate-pars-json.ts` and `json-to-excel.ts`)
 - **ajv** and **ajv-formats** packages (for validation)
 - **xlsx** package (for Excel conversion)
 - **adm-zip** package (for ZIP file handling)
+- **Python 3.9+** with network access (for `get-diq-definition.py` — standard library only)
